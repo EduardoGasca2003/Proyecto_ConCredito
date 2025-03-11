@@ -14,15 +14,17 @@ const db = mysql.createConnection({
 });
 
 app.post('/register', (req, res) => {
-    const sql = "insert into usuarios ('nombre', 'correo', 'contra') values ('"+req.body.name+"', '"+req.body.email+"', '"+req.body.password+"')";
-    const values = [req.body.name, req.body.email, req.body.password]
-    db.query(sql, values, (err, result) => {
-        if(err){
-            return res.json("Error");
-        }else{
-            return res.json(data);
-        }
-    });
+  const sql = "INSERT INTO usuarios (`nombre`, `correo`, `contra`) VALUES (?, ?, ?)";
+  const values = [req.body.name, req.body.email, req.body.password];
+  
+  db.query(sql, values, (err, result) => {
+      if(err){
+          return res.json("Error");
+      }else{
+          return res.json(result);
+      }
+  });
+  
 });
 
 app.listen(8080, () => {

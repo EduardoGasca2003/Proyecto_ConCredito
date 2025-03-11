@@ -20,15 +20,15 @@ function Register() {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        setErrors(Validation(values)); 
         console.log(values);
-        if(errors.name === "" && errors.email === "" && errors.password === ""){
+        const validationErrors = Validation(values);
+        setErrors(validationErrors);
+
+        if(validationErrors.name === "" && validationErrors.email === "" && validationErrors.password === ""){
             axios.post('http://localhost:8080/register', values)
-            .then(res => {navigate('/');})
+            .then(res => { alert("Usuario registrado con éxito. Ahora inicia sesión.");navigate('/');})
             .catch(err => console.log(err));
         }
-
-        
     }
 
     return(

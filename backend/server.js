@@ -38,22 +38,27 @@ app.post('/login', (req, res) => {
   db.query(sql, [req.body.email, req.body.password], (err, result) => {
       if(err){
           return res.json("Error al iniciar sesion");
-      }if(result.length > 0){
-          // ✔ Si encontró el usuario, creamos el token
-      const user = result[0];
-      const token = jwt.sign(
-        { id: user.id, email: user.correo },
-        "clave_secreta", // 🔥 Esta clave será tu firma (puedes cambiarla)
-        { expiresIn: '1h' } // El token expirará en 1 hora
-      );
+      }
+      if(result.length > 0){
+        const user = result[0];
+        const token = jwt.sign(
+          { id: user.id, email: user.correo },
+          "clave_secreta", 
+          { expiresIn: '1h' } // El token expira en 1 hora
+        );
 
-      // Devolvemos el token al cliente
-      return res.json({ token });
-    } else {
-      return res.json("Usuario no encontrado");
-    }
+        // 🚀 Aquí devolvemos el token + nombre del usuario
+        return res.json({
+          status: "Success",
+          token: token,
+          userName: user.nombre
+        });
+      } else {
+        return res.json("Usuario no encontrado");
+      }
   }); 
 });
+
 
 app.get('/home', (req, res) => {
   const token = req.headers['authorization'];

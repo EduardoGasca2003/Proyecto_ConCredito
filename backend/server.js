@@ -27,6 +27,25 @@ app.post('/register', (req, res) => {
   
 });
 
+app.post('/login', (req, res) => {
+
+  console.log("Solicitud recibida en /login");
+  console.log(req.body);
+  
+  const sql = "select * from usuarios where correo = ? and contra = ?";
+  
+  db.query(sql, [req.body.email, req.body.password], (err, result) => {
+      if(err){
+          return res.json("Error al iniciar sesion");
+      }if(result.length > 0){
+          return res.json("Success");
+      }else{
+          return res.json("Error");
+      }
+  });
+  
+});
+
 app.listen(8080, () => {
   console.log("jalando en el puerto 8080")
 });

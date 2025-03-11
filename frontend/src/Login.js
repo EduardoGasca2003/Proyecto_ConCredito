@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, {useState} from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import Validation from './LoginValidation';
+import axios from 'axios';
 
 
 function Login() {
@@ -10,6 +11,7 @@ function Login() {
         password: ''
     });
     
+    const navigate = useNavigate();
     const [errors, setErrors] = useState({});
 
     const handleInput = (event) => {
@@ -18,9 +20,23 @@ function Login() {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        setErrors(Validation(values)); 
         console.log(values);
+        const validationErrors = Validation(values);
+        setErrors(validationErrors);
+
+        if(validationErrors.email === "" && validationErrors.password === ""){
+            axios.post('http://localhost:8080/login', values)
+            .then(res => { 
+                if(res.data === "Success"){
+                    navigate('/home');
+                }else{
+                    alert("Usuario no encontrado");
+                }
+            })    
+            .catch(err => console.log(err));
+        }
     }
+
   return (
     <div className='d-flex justify-content-center align-items-center bg-primary vh-100'>
          <div className='bg-white p-4 rounded w-25'>

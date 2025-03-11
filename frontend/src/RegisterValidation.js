@@ -23,8 +23,6 @@ function Validation(values){
     //If para validar contraseña
     if(values.password === ''){
         error.password = 'La contraseña es requerida'
-    }else if(!password_pattern.test(values.password)){
-        error.password = 'Contraseña incorrecta'
     }else{
         error.password = ''
     }

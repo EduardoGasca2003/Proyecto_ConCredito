@@ -27,7 +27,9 @@ function Login() {
         if(validationErrors.email === "" && validationErrors.password === ""){
             axios.post('http://localhost:8080/login', values)
             .then(res => { 
-                if(res.data === "Success"){
+                if(res.data.token){
+                    // Se guarda el token en LocalStorage
+                    localStorage.setItem("token", res.data.token);
                     navigate('/home');
                 }else{
                     alert("Usuario no encontrado");

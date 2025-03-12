@@ -7,10 +7,10 @@ function Navbar() {
   const userName = localStorage.getItem("userName");
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userName");
-    navigate("/");
-  };
+    localStorage.removeItem('token');
+    localStorage.removeItem('userName');
+    navigate('/');
+};
 
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">

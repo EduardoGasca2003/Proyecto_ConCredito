@@ -17,12 +17,13 @@ function Home() {
     if (!token) {
       navigate('/');
     } else {
-      axios.get('http://localhost:8080/home', {
-        headers: { Authorization: token }
+      axios.get('http://localhost:8080/auth/validate-token', {
+        headers: { Authorization: `Bearer ${token}` }
       })
       .then(res => console.log(res.data))
       .catch(err => {
         console.log(err);
+        localStorage.removeItem('token');
         navigate('/');
       });
     }

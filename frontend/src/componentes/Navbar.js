@@ -38,7 +38,7 @@ function Navbar() {
         <div className="collapse navbar-collapse" id="navbarNavDropdown">
           <ul className="navbar-nav me-auto">
             <li className="nav-item">
-              <Link className="nav-link active" to="/home">Home</Link>
+              <Link className="nav-link active" to="/home">Inicio</Link>
             </li>
             <li className="nav-item">
               <Link className="nav-link" to="/tareas">Tareas</Link>

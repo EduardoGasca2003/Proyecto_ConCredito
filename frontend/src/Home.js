@@ -6,26 +6,32 @@ import TareaItem from './componentes/TareaItem';
 
 function Home() {
   const navigate = useNavigate();
-  const [tareas, setTareas] = useState([
-    { id: 1, titulo: "Aprender React", completada: false },
-    { id: 2, titulo: "Hacer ejercicio", completada: true },
-    { id: 3, titulo: "Leer un libro", completada: false }
-  ]);
+  const [tareas, setTareas] = useState([]);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (!token) {
-      navigate('/');
+      navigate("/");
     } else {
-      axios.get('http://localhost:8080/auth/validate-token', {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-      .then(res => console.log(res.data))
-      .catch(err => {
-        console.log(err);
-        localStorage.removeItem('token');
-        navigate('/');
-      });
+      // 🔹 Primero validamos el token
+      axios
+        .get("http://localhost:8080/auth/validate-token", {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        .then(() => {
+          // 🔹 Si el token es válido, obtenemos las tareas
+          axios
+            .get("http://localhost:8080/tasks", {
+              headers: { Authorization: `Bearer ${token}` }
+            })
+            .then(res => setTareas(res.data))
+            .catch(err => console.log("Error al obtener tareas:", err));
+        })
+        .catch(err => {
+          console.log("Token inválido:", err);
+          localStorage.removeItem("token");
+          navigate("/");
+        });
     }
   }, []);
 
@@ -42,7 +48,7 @@ function Home() {
         ) : (
           <ul className="list-group">
             {tareasPendientes.map((tarea) => (
-              <TareaItem key={tarea.id} tarea={tarea} />
+              <TareaItem key={tarea.id} tarea={tarea} setTareas={setTareas}/>
             ))}
           </ul>
         )}

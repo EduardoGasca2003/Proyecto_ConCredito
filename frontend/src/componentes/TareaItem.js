@@ -1,88 +1,131 @@
 import React, { useState } from "react";
 import { Dropdown, Modal, Button } from "react-bootstrap";
+import axios from "axios";
 
-const TareaItem = ({ tarea }) => {
+const TareaItem = ({ tarea, setTareas }) => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [modalAction, setModalAction] = useState(""); // 'completar' o 'cancelar'
+  const [modalAction, setModalAction] = useState(""); 
   const [editedTitle, setEditedTitle] = useState(tarea.titulo);
   const [editedDescription, setEditedDescription] = useState(tarea.descripcion);
 
-  // Función para abrir el modal de confirmación
   const handleShowConfirm = (action) => {
     setModalAction(action);
     setShowConfirmModal(true);
   };
 
-  // Función para confirmar completar/cancelar tarea
-  const handleConfirmAction = () => {
-    if (modalAction === "completar") {
-      console.log(`Tarea completada: ${tarea.titulo}`);
-    } else if (modalAction === "cancelar") {
-      console.log(`Tarea cancelada: ${tarea.titulo}`);
+  const handleDeleteTask = async () => {
+    const token = localStorage.getItem("token");
+
+    try {
+      await axios.delete(`http://localhost:8080/tasks/${tarea.id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setTareas((prevTareas) => prevTareas.filter((t) => t.id !== tarea.id));
+    } catch (error) {
+      console.error("Error al eliminar la tarea:", error);
     }
+
     setShowConfirmModal(false);
   };
 
-  // Función para abrir el modal de edición
+  const handleCompleteTask = async () => {
+    const token = localStorage.getItem("token");
+
+    try {
+      await axios.patch(
+        `http://localhost:8080/tasks/${tarea.id}`,
+        { completada: !tarea.completada },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setTareas((prevTareas) =>
+        prevTareas.map((t) =>
+          t.id === tarea.id ? { ...t, completada: !t.completada } : t
+        )
+      );
+    } catch (error) {
+      console.error("Error al completar la tarea:", error);
+    }
+
+    setShowConfirmModal(false);
+  };
+
   const handleShowEdit = () => setShowEditModal(true);
 
-  // Función para guardar cambios de edición
-  const handleSaveEdit = () => {
-    console.log("Tarea editada:", { titulo: editedTitle, descripcion: editedDescription });
-    setShowEditModal(false);
+  const handleSaveEdit = async () => {
+    const token = localStorage.getItem("token");
+
+    try {
+      await axios.patch(
+        `http://localhost:8080/tasks/${tarea.id}`,
+        { titulo: editedTitle, descripcion: editedDescription },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setTareas((prevTareas) =>
+        prevTareas.map((t) =>
+          t.id === tarea.id
+            ? { ...t, titulo: editedTitle, descripcion: editedDescription }
+            : t
+        )
+      );
+
+      setShowEditModal(false);
+    } catch (error) {
+      console.error("Error al editar la tarea:", error);
+    }
   };
 
   return (
     <>
-      {/* Componente de Tarea */}
-      <li className="list-group-item d-flex justify-content-between align-items-center">
-        {/* Casilla de verificación */}
-        <input
-          type="checkbox"
-          className="me-2"
-          checked={tarea.completada}
-          onChange={() => handleShowConfirm("completar")}
-        />
 
-        {/* Contenido de la tarea */}
-        <div className="flex-grow-1">
+      <li className="list-group-item d-flex justify-content-between align-items-center">
+
+        <div className="flex-grow-1" >
           <strong>{tarea.titulo}</strong>
           {tarea.descripcion && <p className="text-muted m-0">{tarea.descripcion}</p>}
         </div>
 
-        {/* Dropdown con opciones */}
         <Dropdown>
-          <Dropdown.Toggle variant="secondary" size="sm">⚙️</Dropdown.Toggle>
+          <Dropdown.Toggle variant="btn btn-outline-success" size="sm">Opciones</Dropdown.Toggle>
           <Dropdown.Menu>
+            <Dropdown.Item className="text-success" onClick={() => handleShowConfirm("completar")}>
+              ✅ {tarea.completada ? "Desmarcar" : "Marcar"} como completada
+            </Dropdown.Item>
             <Dropdown.Item onClick={handleShowEdit}>✏️ Editar tarea</Dropdown.Item>
-            <Dropdown.Item className="text-danger" onClick={() => handleShowConfirm("cancelar")}>❌ Cancelar tarea</Dropdown.Item>
+            <Dropdown.Item className="text-danger" onClick={() => handleShowConfirm("eliminar")}>
+              🗑️ Eliminar tarea
+            </Dropdown.Item>
           </Dropdown.Menu>
         </Dropdown>
       </li>
 
-      {/* Modal de Confirmación (Completar/Cancelar) */}
       <Modal show={showConfirmModal} onHide={() => setShowConfirmModal(false)} centered>
         <Modal.Header closeButton>
-          <Modal.Title>Confirmar acción</Modal.Title>
+          <Modal.Title className="w-100 text-center">Manipular Tarea</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {modalAction === "completar"
-            ? `¿Estás seguro de que deseas marcar "${tarea.titulo}" como completada?`
-            : `¿Estás seguro de que deseas cancelar "${tarea.titulo}"? Esta acción no se puede deshacer.`}
+            ? `¿Estás seguro de que deseas ${tarea.completada ? "desmarcar" : "marcar"} "${tarea.titulo}" como completada?`
+            : `⚠️ ¡Atención! ¿Estás seguro de que deseas eliminar "${tarea.titulo}"? Esta acción no se puede deshacer.`}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowConfirmModal(false)}>Cancelar</Button>
-          <Button variant={modalAction === "completar" ? "success" : "danger"} onClick={handleConfirmAction}>
-            {modalAction === "completar" ? "Completar" : "Cancelar"}
-          </Button>
+          <Button variant="btn btn-outline-secondary" onClick={() => setShowConfirmModal(false)}>Cancelar</Button>
+          {modalAction === "completar" ? (
+            <Button variant="btn btn-outline-success" onClick={handleCompleteTask}>
+              {tarea.completada ? "Desmarcar" : "Completar"}
+            </Button>
+          ) : (
+            <Button variant="btn btn-outline-danger" onClick={handleDeleteTask}>Eliminar</Button>
+          )}
         </Modal.Footer>
       </Modal>
 
-      {/* Modal de Edición de Tarea */}
       <Modal show={showEditModal} onHide={() => setShowEditModal(false)} centered>
         <Modal.Header closeButton>
-          <Modal.Title>Editar Tarea</Modal.Title>
+          <Modal.Title className="w-100 text-center" >Editar Tarea</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <input
@@ -101,8 +144,8 @@ const TareaItem = ({ tarea }) => {
           ></textarea>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowEditModal(false)}>Cancelar</Button>
-          <Button variant="primary" onClick={handleSaveEdit}>Guardar Cambios</Button>
+          <Button variant="secondarybtn btn-outline-danger" onClick={() => setShowEditModal(false)}>Cancelar</Button>
+          <Button variant="btn btn-outline-success" onClick={handleSaveEdit}>Guardar Cambios</Button>
         </Modal.Footer>
       </Modal>
     </>

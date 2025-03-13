@@ -4,6 +4,7 @@ import axios from 'axios';
 import Navbar from './componentes/Navbar';
 import TareaItem from './componentes/TareaItem';
 
+
 function Home() {
   const navigate = useNavigate();
   const [tareas, setTareas] = useState([]);

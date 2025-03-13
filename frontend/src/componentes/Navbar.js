@@ -17,9 +17,9 @@ function Navbar() {
       <div className="container-fluid">
         <Link className="navbar-brand me-3" to="/home">
           <img 
-            src="ConCreditoIcono.png"
+            src="ConCreditoLogo.png"
             alt="Logo"
-            style={{ width: '50px', height: '50px', objectFit: 'contain' }}
+            style={{ width: 'auto', height: '50px', objectFit: 'contain' }}
           />
         </Link>
 
@@ -59,7 +59,7 @@ function Navbar() {
               </a>
               <ul className="dropdown-menu dropdown-menu-end">
                 <li>
-                  <button className="dropdown-item" onClick={handleLogout}>
+                  <button className="dropdown-item " onClick={handleLogout}>
                     Cerrar sesión
                   </button>
                 </li>

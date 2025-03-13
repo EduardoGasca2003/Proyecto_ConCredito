@@ -13,13 +13,11 @@ function Home() {
     if (!token) {
       navigate("/");
     } else {
-      // 🔹 Primero validamos el token
       axios
         .get("http://localhost:8080/auth/validate-token", {
           headers: { Authorization: `Bearer ${token}` }
         })
         .then(() => {
-          // 🔹 Si el token es válido, obtenemos las tareas
           axios
             .get("http://localhost:8080/tasks", {
               headers: { Authorization: `Bearer ${token}` }
@@ -42,11 +40,11 @@ function Home() {
     <>
       <Navbar />
       <div className="container mt-5">
-        <h2 className="text-center">Tareas Pendientes</h2>
+        <h2 className="text-center margin-px">Tareas Pendientes</h2>
         {tareasPendientes.length === 0 ? (
           <p className="text-center">No hay tareas pendientes.</p>
         ) : (
-          <ul className="list-group">
+          <ul className="list-group mt-5">
             {tareasPendientes.map((tarea) => (
               <TareaItem key={tarea.id} tarea={tarea} setTareas={setTareas}/>
             ))}

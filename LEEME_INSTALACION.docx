@@ -1,6 +1,16 @@
 REQUISITOS:
 -Visual Studio Code
 -Xampp para gestionar MySQL con phpMyAdmin
+-NodeJS
+-Ejecucion de Scripts habilitada(
+    -Abrir PowerShell Administrador
+    -Escribir "Get-ExecutionPolicy -list". Si MachinePolicy y localMachine estan indefinidas haga lo siguiente: (Si no es el caso, saltese estos pasos)
+        *Escribir "Set-ExecutionPolicy RemoteSigned -Force"
+        *Windows+R y escriba "gpedit.msc y vaya 
+        a Plantillas administrativas/Componentes de Windows/Windows PowerShell"
+        *Abra el archivo "Activar la ejecucion de scripts" y habilitelo
+)
+
 
 
 PRIMER PASO:
@@ -9,7 +19,7 @@ PRIMER PASO:
 -En la parte superior derecha seleccionar la opcion SQL y se ingresa el QUERY
 
 {QUERY PARA CREAR BASE DE DATOS}
-
+1
 -- Crear la base de datos
 CREATE DATABASE IF NOT EXISTS tareas;
 USE tareas;
@@ -33,7 +43,7 @@ CREATE TABLE tareas (
 );
 
 
-COMANDOS PARA CORRER EL FRONTEND Y BACKEND usando 2 terminales de Visual Studio:
+COMANDOS PARA CORRER EL FRONTEND Y BACKEND usando 2 terminales de PowerShell en Visual Studio:
 
 BACKEND:
 Para poder correr el servidor de NestJS es necesario entrar a 
@@ -42,5 +52,6 @@ estando en la carpeta principal "Proyecto_ConCredito".
 Para ejecutar el servidor se escribe el comando "npm run start:dev"
 
 FRONTEND:
-Estando en la carpeta principal "Proyecto_ConCredito", se escribe el comando "cd frontend" y
-para arrancar el frontend se usa el comando "npm start"
+Estando en la carpeta principal "Proyecto_ConCredito", se escribe el comando "cd frontend".
+Posteriormente es necesario instalar las dependencias del frontend con el comando "npm install"
+Y finalmente, para arrancar el frontend se usa el comando "npm start", lo que abrirá una pestaña en el navegador:
